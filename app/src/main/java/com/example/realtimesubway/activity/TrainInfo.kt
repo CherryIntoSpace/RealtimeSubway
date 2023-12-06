@@ -1,16 +1,18 @@
 package com.example.realtimesubway.activity
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.RadioGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.example.realtimesubway.R
-import com.example.realtimesubway.databinding.ActivityMainBinding
 import com.example.realtimesubway.databinding.ActivityTrainInfoBinding
+import com.example.realtimesubway.fragment.DownFragment
+import com.example.realtimesubway.fragment.UpFragment
 
 class TrainInfo : AppCompatActivity() {
-    private lateinit var lineNm : String
-    private lateinit var binding : ActivityTrainInfoBinding
+    private lateinit var lineNm: String
+    private lateinit var binding: ActivityTrainInfoBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTrainInfoBinding.inflate(layoutInflater)
@@ -25,6 +27,7 @@ class TrainInfo : AppCompatActivity() {
 
         var listener = RadioListener()
         binding.rgToggle.setOnCheckedChangeListener(listener)
+        setDataAtFragment(UpFragment(), lineNm)
     }
 
     inner class RadioListener : RadioGroup.OnCheckedChangeListener {
@@ -33,10 +36,11 @@ class TrainInfo : AppCompatActivity() {
                 R.id.rg_toggle -> {
                     when (rb) {
                         R.id.rb_up -> {
-
+                            setDataAtFragment(UpFragment(), lineNm)
                         }
-                        R.id.rb_down -> {
 
+                        R.id.rb_down -> {
+                            setDataAtFragment(DownFragment(), lineNm)
                         }
                     }
                 }
@@ -49,7 +53,20 @@ class TrainInfo : AppCompatActivity() {
         return true
     }
 
-    private fun startToast(msg : String) {
+    private fun switchFragment(fragment: Fragment) {
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.fragment_container, fragment)
+        transaction.commit()
+    }
+
+    private fun setDataAtFragment(fragment: Fragment, lineNm: String){
+        val bundle = Bundle()
+        bundle.putString("lineNm", lineNm)
+        fragment.arguments = bundle
+        switchFragment(fragment)
+    }
+
+    private fun startToast(msg: String) {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
     }
 }
